@@ -865,6 +865,39 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       "Not Connected"
    },
    {
+      "gambatte_gb_link_fault",
+      "Game Link Fault",
+      "Link Fault",
+      "The status of the last outgoing/incoming connection.",
+      NULL,
+      "gb_link",
+      {
+         { "No Fault",  NULL },
+         { "Connection Error",  NULL },
+         { "Send Error",  NULL },
+         { "Receive Error",  NULL },
+         { "ioctl Error",  NULL },
+         { "fd Error",  NULL },
+         { "Socket Error",  NULL },
+         { NULL, NULL },
+      },
+      "No Fault"
+   },
+   {
+      "gambatte_gb_link_resetfault",
+      "Reset Faults upon resume.",
+      "Reset Faults upon resume.",
+      "Reset Faults upon resume.",
+      NULL,
+      "gb_link",
+      {
+         { "disabled",  NULL },
+         { "enabled", NULL },
+         { NULL, NULL },
+      },
+      "disabled"
+   },
+   {
       "gambatte_gb_link_network_port",
       "Network Link Port",
       "Port",

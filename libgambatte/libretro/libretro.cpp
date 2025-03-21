@@ -2240,6 +2240,26 @@ static void check_variables(bool startup)
       gb_NetworkPort=atoi(var.value);
    }
 
+   var.key = "gambatte_gb_link_resetfault";
+   var.value = NULL;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (!strcmp(var.value, "enabled")) {
+         gb_net_serial.resetFault();
+         if (libretro_supports_set_variable)
+         {
+            // SEEMINGLY GOOD, DON'T TOUCH!
+            struct retro_variable var = {0};
+            var.key   = "gambatte_gb_link_resetfault";
+            var.value = "disabled";
+            environ_cb(RETRO_ENVIRONMENT_SET_VARIABLE, &var);
+            var.key   = "gambatte_gb_link_fault";
+            var.value = "No Fault";
+            environ_cb(RETRO_ENVIRONMENT_SET_VARIABLE, &var);
+            
+         }
+      }
+   }
+
    unsigned ip_index = 1;
    gb_NetworkClientAddr = "";
 
@@ -2762,9 +2782,22 @@ void retro_run()
 
    frames_count++;
 
+
+
    bool updated = false;
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
       check_variables(false);
+   #if HAVE_NETWORK
+   if(gb_net_serial.hasNewFault()) {
+      if (libretro_supports_set_variable)
+      {
+         struct retro_variable var = {0};
+         var.key   = "gambatte_gb_link_fault";
+         var.value = NetSerialFaultTextMap[gb_net_serial.getFault()];
+         environ_cb(RETRO_ENVIRONMENT_SET_VARIABLE, &var);
+      }
+   }
+   #endif
 }
 
 unsigned retro_api_version() { return RETRO_API_VERSION; }

@@ -53,6 +53,8 @@ else ifneq ($(findstring MINGW,$(shell uname -a)),)
 	system_platform = win
 endif
 
+platform = miyoo
+
 TARGET_NAME := gambatte
 
 version_script = libgambatte/libretro/link.T
@@ -401,9 +403,14 @@ else ifeq ($(platform), retrofw)
 # MIYOO
 else ifeq ($(platform), miyoo)
    TARGET := $(TARGET_NAME)_libretro.so
-   CC = /opt/miyoo/usr/bin/arm-linux-gcc
-   CXX = /opt/miyoo/usr/bin/arm-linux-g++
-   AR = /opt/miyoo/usr/bin/arm-linux-ar
+   CC = /opt/miyoomini-toolchain/usr/bin/arm-linux-gnueabihf-gcc
+   CXX = /opt/miyoomini-toolchain/usr/bin/arm-linux-gnueabihf-g++
+   AR = /opt/miyoomini-toolchain/usr/bin/arm-linux-gnueabihf-ar
+   ifneq (,$(findstring Haiku,$(shell uname -s)))
+   LDFLAGS += -lnetwork -lroot
+   endif
+   HAVE_NETWORK = 1
+   # LDFLAGS += -Wl,-Map=$(TARGET_NAME)_libretro.map -lm -Wl,--cref
    fpic := -fPIC
    SHARED := -shared -Wl,-version-script=$(version_script)
    PLATFORM_DEFINES := -DDINGUX
@@ -748,7 +755,7 @@ CXXFLAGS += $(INCFLAGS)
 	$(CC) $(CFLAGS) -c $(OBJOUT)$@ $<
 
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f $(OBJECTS) $(TARGET) $(TARGET_NAME)_libretro.map
 
 .PHONY: clean
 endif
